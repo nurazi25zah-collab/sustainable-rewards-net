@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
-import logo from "@/assets/ecoreward-logo.png";
+import logo from "@/assets/ecoreward-logo-new.png";
 import { Session, User } from "@supabase/supabase-js";
 
 const Auth = () => {

@@ -1,31 +1,38 @@
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
-import { Recycle, Award, TrendingUp } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Sparkles, ArrowRight, Award } from "lucide-react";
 import heroImage from "@/assets/hero-image.jpg";
+import patternBg from "@/assets/pattern-bg.png";
 
 export const HeroSection = () => {
+  const navigate = useNavigate();
+  
   return (
-    <section className="relative min-h-screen flex items-center pt-16">
-      {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-5">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,hsl(var(--primary))_0%,transparent_50%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_50%,hsl(var(--accent))_0%,transparent_50%)]" />
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
+      {/* Background with Gradient */}
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-accent/5">
+        <div className="absolute inset-0 opacity-20" 
+          style={{
+            backgroundImage: `url(${patternBg})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          }}
+        />
       </div>
 
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative">
+      {/* Content */}
+      <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Left Content */}
-          <div className="space-y-8">
-            <div className="inline-block">
-              <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium">
-                <Recycle className="h-4 w-4" />
-                Platform Ramah Lingkungan
-              </span>
+          <div className="text-left space-y-8 animate-fade-in">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-card/60 backdrop-blur-xl border border-border/30 shadow-elegant">
+              <Sparkles className="h-4 w-4 text-primary" />
+              <span className="text-sm font-medium text-primary">Platform Pengelolaan Sampah Terpadu</span>
             </div>
-
+            
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight">
               Ubah Sampah Jadi{" "}
-              <span className="bg-gradient-to-r from-accent via-accent-glow to-accent bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-primary via-primary-glow to-accent bg-clip-text text-transparent">
                 Poin Reward
               </span>
             </h1>
@@ -35,63 +42,53 @@ export const HeroSection = () => {
               dapatkan poin, dan tukarkan dengan reward menarik dari merchant partner kami.
             </p>
 
-            <div className="flex flex-wrap gap-4">
-              <Link to="/auth">
-                <Button size="lg" className="shadow-elegant hover:shadow-glow transition-all">
-                  Mulai Sekarang
-                </Button>
-              </Link>
-              <Button size="lg" variant="outline">
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Button size="lg" className="shadow-elegant hover:shadow-glow transition-all bg-gradient-to-r from-primary to-primary-glow" onClick={() => navigate("/auth")}>
+                Mulai Sekarang
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+              <Button size="lg" variant="outline" className="bg-card/60 backdrop-blur-xl border-border/30" onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}>
                 Pelajari Lebih Lanjut
               </Button>
             </div>
 
-            {/* Stats */}
-            <div className="grid grid-cols-3 gap-6 pt-8 border-t border-border">
-              <div>
-                <div className="flex items-center gap-2 text-primary font-bold text-2xl">
-                  <TrendingUp className="h-5 w-5" />
-                  2K+
-                </div>
-                <p className="text-sm text-muted-foreground mt-1">Warga Aktif</p>
+            {/* Stats with Glassmorphism */}
+            <div className="grid grid-cols-3 gap-6 pt-8">
+              <div className="p-4 rounded-2xl bg-card/40 backdrop-blur-xl border border-border/20 shadow-elegant">
+                <div className="text-3xl font-bold text-primary mb-1">2,145+</div>
+                <div className="text-sm text-muted-foreground">Warga Aktif</div>
               </div>
-              <div>
-                <div className="flex items-center gap-2 text-accent font-bold text-2xl">
-                  <Award className="h-5 w-5" />
-                  150+
-                </div>
-                <p className="text-sm text-muted-foreground mt-1">Reward Tersedia</p>
+              <div className="p-4 rounded-2xl bg-card/40 backdrop-blur-xl border border-border/20 shadow-elegant">
+                <div className="text-3xl font-bold text-accent mb-1">15K+</div>
+                <div className="text-sm text-muted-foreground">Setoran</div>
               </div>
-              <div>
-                <div className="flex items-center gap-2 text-success font-bold text-2xl">
-                  <Recycle className="h-5 w-5" />
-                  50 Ton
-                </div>
-                <p className="text-sm text-muted-foreground mt-1">Sampah Terkumpul</p>
+              <div className="p-4 rounded-2xl bg-card/40 backdrop-blur-xl border border-border/20 shadow-elegant">
+                <div className="text-3xl font-bold text-success mb-1">1.2M</div>
+                <div className="text-sm text-muted-foreground">Poin Ditukar</div>
               </div>
             </div>
           </div>
 
-          {/* Right Image */}
-          <div className="relative lg:h-[600px]">
-            <div className="relative h-full rounded-2xl overflow-hidden shadow-elegant">
-              <img
-                src={heroImage}
-                alt="Community recycling"
-                className="w-full h-full object-cover"
+          {/* Right Content - Hero Image with Glassmorphism */}
+          <div className="relative animate-fade-in">
+            <div className="relative rounded-3xl overflow-hidden shadow-2xl border border-border/20">
+              <img 
+                src={heroImage} 
+                alt="EcoReward Platform" 
+                className="w-full h-auto object-cover"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-background/50 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 to-transparent" />
             </div>
             
-            {/* Floating Card */}
-            <div className="absolute -bottom-6 -left-6 bg-card p-6 rounded-xl shadow-glow border border-border max-w-xs">
+            {/* Floating Badge with Glassmorphism */}
+            <div className="absolute -bottom-6 -left-6 bg-card/70 backdrop-blur-xl p-6 rounded-2xl shadow-elegant border border-border/30">
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary-glow flex items-center justify-center">
-                  <Award className="h-6 w-6 text-primary-foreground" />
+                <div className="p-3 bg-success/10 rounded-xl">
+                  <Award className="h-8 w-8 text-success" />
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Total Poin Anda</p>
-                  <p className="text-2xl font-bold text-primary">1,250 Poin</p>
+                  <div className="text-2xl font-bold text-success">87</div>
+                  <div className="text-sm text-muted-foreground">Reward Aktif</div>
                 </div>
               </div>
             </div>
