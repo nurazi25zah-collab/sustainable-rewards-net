@@ -2,11 +2,12 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { CheckCircle, Package, TrendingUp, LogOut } from "lucide-react";
 import logo from "@/assets/ecoreward-logo-new.png";
 import { useToast } from "@/hooks/use-toast";
 import { Session, User } from "@supabase/supabase-js";
+import { VerifikasiSetoran } from "@/components/petugas/VerifikasiSetoran";
 
 const DashboardPetugas = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -111,18 +112,7 @@ const DashboardPetugas = () => {
           </Card>
         </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Daftar Setoran Menunggu</CardTitle>
-            <CardDescription>Verifikasi setoran warga yang baru masuk</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-center py-8 text-muted-foreground">
-              <Package className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>Tidak ada setoran yang menunggu verifikasi</p>
-            </div>
-          </CardContent>
-        </Card>
+        <VerifikasiSetoran />
       </div>
     </div>
   );

@@ -3,15 +3,18 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users, Package, Award, TrendingUp, Settings, LogOut, Menu, BarChart3, Gift, Recycle, BookOpen, Bell, ShoppingBag } from "lucide-react";
+import { Users, Package, Award, TrendingUp, LogOut, Menu, BarChart3, Gift, Recycle, BookOpen, Bell, ShoppingBag } from "lucide-react";
 import logo from "@/assets/ecoreward-logo-new.png";
 import { useToast } from "@/hooks/use-toast";
 import { Session, User } from "@supabase/supabase-js";
+import { KelolaSampah } from "@/components/admin/KelolaSampah";
+import { KelolaReward } from "@/components/admin/KelolaReward";
 
 const DashboardAdmin = () => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [activeMenu, setActiveMenu] = useState("dashboard");
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -47,13 +50,13 @@ const DashboardAdmin = () => {
   };
 
   const menuItems = [
-    { icon: BarChart3, label: "Dashboard", active: true },
-    { icon: Package, label: "Kategori Sampah", onClick: () => {} },
-    { icon: Gift, label: "Kelola Reward", onClick: () => {} },
-    { icon: Users, label: "Kelola Pengguna", onClick: () => {} },
-    { icon: ShoppingBag, label: "Merchant", onClick: () => {} },
-    { icon: BookOpen, label: "Edukasi", onClick: () => {} },
-    { icon: Bell, label: "Notifikasi", onClick: () => {} },
+    { icon: BarChart3, label: "Dashboard", key: "dashboard" },
+    { icon: Package, label: "Kategori Sampah", key: "sampah" },
+    { icon: Gift, label: "Kelola Reward", key: "reward" },
+    { icon: Users, label: "Kelola Pengguna", key: "pengguna" },
+    { icon: ShoppingBag, label: "Merchant", key: "merchant" },
+    { icon: BookOpen, label: "Edukasi", key: "edukasi" },
+    { icon: Bell, label: "Notifikasi", key: "notifikasi" },
   ];
 
   return (
@@ -71,12 +74,12 @@ const DashboardAdmin = () => {
         </div>
 
         <nav className="flex-1 p-4 space-y-2">
-          {menuItems.map((item, index) => (
+          {menuItems.map((item) => (
             <Button
-              key={index}
-              variant={item.active ? "default" : "ghost"}
+              key={item.key}
+              variant={activeMenu === item.key ? "default" : "ghost"}
               className={`w-full justify-start ${!sidebarOpen && 'px-2'}`}
-              onClick={item.onClick}
+              onClick={() => setActiveMenu(item.key)}
             >
               <item.icon className="h-5 w-5" />
               {sidebarOpen && <span className="ml-3">{item.label}</span>}
@@ -117,8 +120,10 @@ const DashboardAdmin = () => {
         </header>
 
         <main className="p-6">
-          {/* Stats Overview */}
-          <div className="grid md:grid-cols-4 gap-6 mb-8">
+          {activeMenu === "dashboard" && (
+            <>
+              {/* Stats Overview */}
+              <div className="grid md:grid-cols-4 gap-6 mb-8">
             <Card className="bg-gradient-to-br from-blue-500 to-blue-600 border-0 text-white shadow-lg">
               <CardContent className="p-6">
                 <div className="flex items-start justify-between mb-4">
@@ -264,41 +269,54 @@ const DashboardAdmin = () => {
             </Card>
           </div>
 
-          {/* Management Cards */}
-          <div>
-            <h2 className="text-xl font-bold mb-4">Manajemen Sistem</h2>
-            <div className="grid md:grid-cols-3 gap-6">
-              <Card className="hover:shadow-elegant transition-all cursor-pointer bg-card/60 backdrop-blur-xl border-border/30" onClick={() => toast({ title: "Kategori Sampah", description: "Fitur dalam pengembangan" })}>
-                <CardHeader>
-                  <div className="p-3 bg-primary/10 rounded-xl w-fit mb-2">
-                    <Recycle className="h-8 w-8 text-primary" />
-                  </div>
-                  <CardTitle>Kelola Kategori Sampah</CardTitle>
-                  <CardDescription>Atur jenis sampah dan konversi poin</CardDescription>
-                </CardHeader>
-              </Card>
+              {/* Management Cards */}
+              <div>
+                <h2 className="text-xl font-bold mb-4">Manajemen Sistem</h2>
+                <div className="grid md:grid-cols-3 gap-6">
+                  <Card className="hover:shadow-elegant transition-all cursor-pointer bg-card/60 backdrop-blur-xl border-border/30" onClick={() => setActiveMenu("sampah")}>
+                    <CardHeader>
+                      <div className="p-3 bg-primary/10 rounded-xl w-fit mb-2">
+                        <Recycle className="h-8 w-8 text-primary" />
+                      </div>
+                      <CardTitle>Kelola Kategori Sampah</CardTitle>
+                      <CardDescription>Atur jenis sampah dan konversi poin</CardDescription>
+                    </CardHeader>
+                  </Card>
 
-              <Card className="hover:shadow-elegant transition-all cursor-pointer bg-card/60 backdrop-blur-xl border-border/30" onClick={() => toast({ title: "Kelola Reward", description: "Fitur dalam pengembangan" })}>
-                <CardHeader>
-                  <div className="p-3 bg-accent/10 rounded-xl w-fit mb-2">
-                    <Award className="h-8 w-8 text-accent" />
-                  </div>
-                  <CardTitle>Kelola Reward</CardTitle>
-                  <CardDescription>Tambah dan edit voucher reward</CardDescription>
-                </CardHeader>
-              </Card>
+                  <Card className="hover:shadow-elegant transition-all cursor-pointer bg-card/60 backdrop-blur-xl border-border/30" onClick={() => setActiveMenu("reward")}>
+                    <CardHeader>
+                      <div className="p-3 bg-accent/10 rounded-xl w-fit mb-2">
+                        <Award className="h-8 w-8 text-accent" />
+                      </div>
+                      <CardTitle>Kelola Reward</CardTitle>
+                      <CardDescription>Tambah dan edit voucher reward</CardDescription>
+                    </CardHeader>
+                  </Card>
 
-              <Card className="hover:shadow-elegant transition-all cursor-pointer bg-card/60 backdrop-blur-xl border-border/30" onClick={() => toast({ title: "Kelola Pengguna", description: "Fitur dalam pengembangan" })}>
-                <CardHeader>
-                  <div className="p-3 bg-success/10 rounded-xl w-fit mb-2">
-                    <Users className="h-8 w-8 text-success" />
-                  </div>
-                  <CardTitle>Kelola Pengguna</CardTitle>
-                  <CardDescription>Manajemen warga, petugas, dan mitra</CardDescription>
-                </CardHeader>
-              </Card>
-            </div>
-          </div>
+                  <Card className="hover:shadow-elegant transition-all cursor-pointer bg-card/60 backdrop-blur-xl border-border/30" onClick={() => setActiveMenu("pengguna")}>
+                    <CardHeader>
+                      <div className="p-3 bg-success/10 rounded-xl w-fit mb-2">
+                        <Users className="h-8 w-8 text-success" />
+                      </div>
+                      <CardTitle>Kelola Pengguna</CardTitle>
+                      <CardDescription>Manajemen warga, petugas, dan mitra</CardDescription>
+                    </CardHeader>
+                  </Card>
+                </div>
+              </div>
+            </>
+          )}
+
+          {activeMenu === "sampah" && <KelolaSampah />}
+          {activeMenu === "reward" && <KelolaReward />}
+          {activeMenu === "pengguna" && (
+            <Card className="bg-card/60 backdrop-blur-xl border-border/30">
+              <CardHeader>
+                <CardTitle>Kelola Pengguna</CardTitle>
+                <CardDescription>Fitur dalam pengembangan</CardDescription>
+              </CardHeader>
+            </Card>
+          )}
         </main>
       </div>
     </div>

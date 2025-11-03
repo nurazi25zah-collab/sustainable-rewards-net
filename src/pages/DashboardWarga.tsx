@@ -3,15 +3,21 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Award, Package, History, Bell, LogOut, Menu } from "lucide-react";
+import { Award, Package, History, Bell, LogOut } from "lucide-react";
 import logo from "@/assets/ecoreward-logo-new.png";
 import { useToast } from "@/hooks/use-toast";
 import { Session, User } from "@supabase/supabase-js";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { SetoranForm } from "@/components/warga/SetoranForm";
+import { RiwayatTransaksi } from "@/components/warga/RiwayatTransaksi";
+import { RewardList } from "@/components/warga/RewardList";
 
 const DashboardWarga = () => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [saldoPoin, setSaldoPoin] = useState<any>(null);
+  const [wargaId, setWargaId] = useState<string>("");
+  const [activeTab, setActiveTab] = useState("overview");
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -32,16 +38,15 @@ const DashboardWarga = () => {
       if (!session?.user) {
         navigate("/auth");
       } else {
-        fetchSaldoPoin(session.user.id);
+        fetchWargaData(session.user.id);
       }
     });
 
     return () => subscription.unsubscribe();
   }, [navigate]);
 
-  const fetchSaldoPoin = async (userId: string) => {
+  const fetchWargaData = async (userId: string) => {
     try {
-      // Get warga_id first
       const { data: wargaData } = await supabase
         .from("warga")
         .select("warga_id")
@@ -49,14 +54,23 @@ const DashboardWarga = () => {
         .single();
 
       if (wargaData) {
-        const { data } = await supabase
-          .from("saldo_poin")
-          .select("*")
-          .eq("user_id", wargaData.warga_id)
-          .single();
-        
-        setSaldoPoin(data);
+        setWargaId(wargaData.warga_id);
+        fetchSaldoPoin(wargaData.warga_id);
       }
+    } catch (error) {
+      console.error("Error fetching warga:", error);
+    }
+  };
+
+  const fetchSaldoPoin = async (wargaUserId: string) => {
+    try {
+      const { data } = await supabase
+        .from("saldo_poin")
+        .select("*")
+        .eq("user_id", wargaUserId)
+        .single();
+      
+      setSaldoPoin(data);
     } catch (error) {
       console.error("Error fetching saldo:", error);
     }
@@ -113,46 +127,62 @@ const DashboardWarga = () => {
           </CardContent>
         </Card>
 
-        {/* Quick Actions */}
-        <div className="grid md:grid-cols-3 gap-4 mb-8">
-          <Card className="hover:shadow-elegant transition-all cursor-pointer">
-            <CardHeader>
-              <Package className="h-8 w-8 text-primary mb-2" />
-              <CardTitle className="text-lg">Setor Sampah</CardTitle>
-              <CardDescription>Buat setoran baru</CardDescription>
-            </CardHeader>
-          </Card>
+        {/* Tabs */}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+          <TabsList className="grid w-full grid-cols-3 bg-card/60 backdrop-blur-xl">
+            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="setor">Setor Sampah</TabsTrigger>
+            <TabsTrigger value="reward">Tukar Poin</TabsTrigger>
+          </TabsList>
 
-          <Card className="hover:shadow-elegant transition-all cursor-pointer">
-            <CardHeader>
-              <Award className="h-8 w-8 text-accent mb-2" />
-              <CardTitle className="text-lg">Tukar Poin</CardTitle>
-              <CardDescription>Lihat reward tersedia</CardDescription>
-            </CardHeader>
-          </Card>
+          <TabsContent value="overview" className="space-y-6">
+            <div className="grid md:grid-cols-3 gap-4">
+              <Card className="hover:shadow-elegant transition-all cursor-pointer" onClick={() => setActiveTab("setor")}>
+                <CardHeader>
+                  <Package className="h-8 w-8 text-primary mb-2" />
+                  <CardTitle className="text-lg">Setor Sampah</CardTitle>
+                  <CardDescription>Buat setoran baru</CardDescription>
+                </CardHeader>
+              </Card>
 
-          <Card className="hover:shadow-elegant transition-all cursor-pointer">
-            <CardHeader>
-              <History className="h-8 w-8 text-success mb-2" />
-              <CardTitle className="text-lg">Riwayat</CardTitle>
-              <CardDescription>Lihat transaksi Anda</CardDescription>
-            </CardHeader>
-          </Card>
-        </div>
+              <Card className="hover:shadow-elegant transition-all cursor-pointer" onClick={() => setActiveTab("reward")}>
+                <CardHeader>
+                  <Award className="h-8 w-8 text-accent mb-2" />
+                  <CardTitle className="text-lg">Tukar Poin</CardTitle>
+                  <CardDescription>Lihat reward tersedia</CardDescription>
+                </CardHeader>
+              </Card>
 
-        {/* Recent Activity */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Aktivitas Terbaru</CardTitle>
-            <CardDescription>Transaksi dan notifikasi terkini</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-center py-8 text-muted-foreground">
-              <Bell className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>Belum ada aktivitas terbaru</p>
+              <Card className="hover:shadow-elegant transition-all cursor-pointer">
+                <CardHeader>
+                  <History className="h-8 w-8 text-success mb-2" />
+                  <CardTitle className="text-lg">Riwayat</CardTitle>
+                  <CardDescription>Lihat transaksi Anda</CardDescription>
+                </CardHeader>
+              </Card>
             </div>
-          </CardContent>
-        </Card>
+
+            <RiwayatTransaksi wargaId={wargaId} />
+          </TabsContent>
+
+          <TabsContent value="setor">
+            <SetoranForm 
+              wargaId={wargaId} 
+              onSuccess={() => {
+                fetchSaldoPoin(wargaId);
+                setActiveTab("overview");
+              }} 
+            />
+          </TabsContent>
+
+          <TabsContent value="reward">
+            <RewardList 
+              wargaId={wargaId}
+              currentPoin={saldoPoin?.total_poin || 0}
+              onRedeem={() => fetchSaldoPoin(wargaId)}
+            />
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
